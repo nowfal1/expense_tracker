@@ -1,16 +1,29 @@
-# exp_tracker
+📱 Expense Tracker App – Built with Flutter & Firebase
+A simple and beautiful expense tracking app that helps users manage their daily spending.
+Users can add expenses, view total amounts, and download their records as CSV files.
 
-A new Flutter project.
+🔧 Features:
+Add, edit, and delete expenses
 
-## Getting Started
+Categorize spending (food, travel, shopping, etc.)
 
-This project is a starting point for a Flutter application.
+View total expenses in a clean UI
 
-A few resources to get you started if this is your first Flutter project:
+Export data to CSV format
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Firebase Authentication (Login/Logout)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Real-time sync using Cloud Firestore
+
+🛠️ Tech Stack:
+Flutter
+
+Firebase Auth
+
+Cloud Firestore
+
+CSV & Path Provider packages
+
+Permission Handler for storage access
+
+Perfect for learning how to integrate Firebase with Flutter and manage user data in real time.
