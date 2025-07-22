@@ -4,6 +4,7 @@ import 'package:exp_tracker/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:exp_tracker/pages/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +21,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expense Tracker App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/splash',
       routes: {
         '/': (context) => LoginPage(),
+        '/splash': (context) => SplashScreen(),
         '/exp': (context) => ExpensePage(),
         '/register': (context) => RegisterPage(),
       },

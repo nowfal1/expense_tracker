@@ -21,6 +21,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late final AnimationController _lottieController;
   bool _isFieldFocused = false;
   bool _obscurePassword = true;
+  final ScrollController _scrollController = ScrollController();
+  double _scrollOffset = 0.0;
 
   @override
   void initState() {
@@ -28,6 +30,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _lottieController = AnimationController(vsync: this);
     _emailFocus.addListener(_handleFocusChange);
     _passwordFocus.addListener(_handleFocusChange);
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    setState(() {
+      _scrollOffset =
+          _scrollController.hasClients ? _scrollController.offset : 0.0;
+    });
   }
 
   void _handleFocusChange() {
@@ -44,6 +54,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _emailFocus.dispose();
     _passwordFocus.dispose();
     _lottieController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -115,6 +126,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final lottieStartAlign = Alignment.topCenter;
+    final lottieEndAlign = Alignment.bottomCenter;
+    final cardStartAlign = Alignment.center;
+    final cardEndAlign = Alignment.topCenter;
+    // Calculate animation value (0.0 at top, 1.0 at max scroll)
+    final maxScroll = 200.0;
+    final t = (_scrollOffset / maxScroll).clamp(0.0, 1.0);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -126,30 +146,46 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AnimatedOpacity(
-                  opacity: 1.0,
-                  duration: const Duration(milliseconds: 800),
-                  child: SizedBox(
-                    height: 150,
-                    child: Lottie.asset(
-                      'assets/See no evil.json',
-                      controller: _lottieController,
-                      onLoaded: (composition) {
-                        _lottieController.duration = composition.duration;
-                      },
-                      repeat: false,
-                      animate: _isFieldFocused,
-                    ),
+        child: Stack(
+          children: [
+            // Animated Lottie
+            AnimatedAlign(
+              alignment: Alignment.lerp(lottieStartAlign, lottieEndAlign, t)!,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: 40 + (screenHeight * 0.1) * (1 - t),
+                  bottom: 40 + (screenHeight * 0.1) * t,
+                ),
+                child: SizedBox(
+                  height: 150,
+                  child: Lottie.asset(
+                    'assets/See no evil.json',
+                    controller: _lottieController,
+                    onLoaded: (composition) {
+                      _lottieController.duration = composition.duration;
+                    },
+                    repeat: false,
+                    animate: _isFieldFocused,
                   ),
                 ),
-                const SizedBox(height: 24),
-                Card(
+              ),
+            ),
+            // Animated Card
+            AnimatedAlign(
+              alignment: Alignment.lerp(cardStartAlign, cardEndAlign, t)!,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(
+                  top: 180,
+                  left: 24,
+                  right: 24,
+                  bottom: 24,
+                ),
+                child: Card(
                   elevation: 8,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
@@ -268,6 +304,30 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+                        const SizedBox(height: 16),
+                        // Register Button (no loading state)
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/register');
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              side: const BorderSide(color: Colors.blueAccent),
+                            ),
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
@@ -317,9 +377,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
